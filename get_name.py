@@ -2,8 +2,7 @@ from datetime import datetime
 import requests
 import urllib3
 
-syncthing_url = "https://192.168.0.19:8384"
-api = "JTjVyLVXZivtzeJCk65XAjp4K9UU37N9"
+
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -63,6 +62,4 @@ class Get_Name:
             print('failed', response.status_code)
         return return_items
 
-# Add this call at the bottom so the code executes
-if __name__ == "__main__":
-    Get_Name.get_folders()
+
