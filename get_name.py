@@ -16,7 +16,6 @@ class Get_Name:
         main_url = f"{SYNCTHING_URL}/rest/system/config"
         response = requests.get(main_url, headers=headers, verify=False)
         return_items = []
-        
         if response.status_code == 200:
             print('connected')
             config = response.json()
@@ -52,19 +51,22 @@ class Get_Name:
                         readable_time = "Unknown time"
                     
                     if item_type == "FILE_INFO_TYPE_FILE":
+                        print(f"Folder: {folder_name} | File: {name} ({size} bytes) - Modified: {readable_time}")
                         result = {}
                         result['folder_name'] = folder_name
                         result['file_name'] = name
                         result['size'] = size
                         result['time'] = readable_time
-
                         return_items.append(result)
                     elif item_type == "FILE_INFO_TYPE_DIRECTORY":
                         print(f"Folder: {folder_name} | Directory: {name}/ - Modified: {readable_time}")
-                        result = f"Folder: {folder_name} | Directory: {name}/ - Modified: {readable_time}"
+                        result ={}
+                        result['folder_name'] = folder_name
+                        result['file_name'] = name
+                        result['size'] = 0
+                        result['time'] = readable_time                        
                         return_items.append(result)
         else:
             print('failed', response.status_code)
         return return_items
-
 
