@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cloud Storage</title>
+</head>
+<body>
+    <h2>Synced Files</h2>
+    <table border="1" cellpadding="6">
+        <thead>
+            <tr>
+                <th>Folder</th>
+                <th>File Name</th>
+                <th>Size (Bytes)</th>
+                <th>Last Modified</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in files %}
+            <tr>
+                <td><strong>{{ file.folder_name }}</strong></td>
+                <td>{{ file.file_name }}</td>
+                <td>{{ file.size }}</td>
+                <td>{{ file.time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
