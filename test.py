@@ -2,17 +2,18 @@ from datetime import datetime
 import requests
 import urllib3
 
-SYNCTHING_URL = "https://192.168.0.19:8384"
-API_KEY = "JTjVyLVXZivtzeJCk65XAjp4K9UU37N9"
+syncthing_url = "https://192.168.0.19:8384"
+api = "JTjVyLVXZivtzeJCk65XAjp4K9UU37N9"
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-headers = {
-    "X-API-Key": API_KEY
-}
+
 class Get_Name:
-    
-    def get_folders():
+
+    @staticmethod
+
+    def get_folders(SYNCTHING_URL, API_KEY):
+        headers = {"X-API-Key": API_KEY}
         main_url = f"{SYNCTHING_URL}/rest/system/config"
         response = requests.get(main_url, headers=headers, verify=False)
         return_items = []
