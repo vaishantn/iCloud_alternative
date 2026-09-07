@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select a File or Folder</title>
+</head>
+<body>
+    <h2>Select a File or Folder</h2>
+
+    <form action="/upload/complete" method="POST" enctype="multipart/form-data">
+        
+        <!-- Option 1: Single File Picker -->
+        <div>
+            <label><strong>Single File:</strong></label><br>
+            <input type="file" name="selected_file">
+        </div>
+
+        <br><br>
+
+        <!-- Option 2: Folder Picker -->
+        <div>
+            <label><strong>Folder:</strong></label><br>
+            <input 
+                type="file" 
+                id="folderInput" 
+                name="selected_folder" 
+                webkitdirectory 
+                directory 
+                multiple 
+                style="display: none;"
+            >
+            <button type="button" onclick="document.getElementById('folderInput').click();">
+                Choose Folder
+            </button>
+            <span id="folderLabel" style="margin-left: 10px; font-weight: bold;">No folder chosen</span>
+        </div>
+
+        <br><br>
+
+        <button type="submit">Submit</button>
+        <button type="button" onclick="location.reload();">Clear Selection</button>
+    </form>
+
+    <script>
+        const folderInput = document.getElementById('folderInput');
+        const folderLabel = document.getElementById('folderLabel');
+
+        folderInput.onchange = function () {
+            if (folderInput.files.length > 0) {
+                const relativePath = folderInput.files[0].webkitRelativePath;
+                const rootFolder = relativePath.split('/')[0];
+                folderLabel.textContent = rootFolder + "/";
+            } else {
+                folderLabel.textContent = "No folder chosen";
+            }
+        };
+    </script>
+</body>
+</html>

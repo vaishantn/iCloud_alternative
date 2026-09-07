@@ -24,7 +24,7 @@ class Get_Name:
             f_list = []
             for folder in folders:
                 f_list.append({           
-                    "id": folder.get('id'),
+                    "id": 'wngc4-44nc9',
                     "label": folder.get('label') or folder.get('id'),
                     "path": folder.get('path')
                 })

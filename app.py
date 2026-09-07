@@ -19,7 +19,7 @@ def home():
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    return render_template('test.html')
+    return render_template('file_add.html')
 
 @app.route('/upload/complete', methods=['POST'])
 def upload_complete():
