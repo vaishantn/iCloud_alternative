@@ -3,6 +3,7 @@ from get_name import Get_Name
 import urllib3
 import os
 from werkzeug.utils import secure_filename
+import requests
 app = Flask(__name__)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -49,6 +50,16 @@ def upload_complete():
                     
                     file.save(file_path)
         return redirect('/')
+
+@app.route("/add-device", methods=["POST"])
+def get_device_id():
+    headers = {"X-API-Key": api}
+
+    response = requests.get(f"{sync_url}/rest/system/status", headers=headers, verify=False)
+
+    if response.status_code == 200:
+        device_id = response.json().get("myID")
+        return f"<h3>Scan or enter this Device ID on your phone:</h3><p><code>{device_id}</code></p>"
             
 if __name__ == "__main__":
     app.run(debug=True)
