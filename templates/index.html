@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cloud Storage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
 </head>
 <body>
     <h2>Synced Files</h2>
-    <table border="1" cellpadding="6">
+    
+    <table>
         <thead>
             <tr>
                 <th>Folder</th>
@@ -25,11 +29,17 @@
             {% endfor %}
         </tbody>
     </table>
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-    <button type="submit">upload</button>
+
+    <form action="/upload" method="GET">
+        <button type="submit">Upload</button>
     </form>
-    <form action="/add-device" method="POST" enctype="multipart/form-data">
-    <button type="submit">add device</button>
+    
+    <form action="/add-device" method="GET">
+        <button type="submit">Add Device</button>
+    </form>
+    
+    <form action="/converter" method="GET">
+        <button type="submit">Convert Files</button>
     </form>
 </body>
 </html>
