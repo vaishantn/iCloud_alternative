@@ -30,8 +30,6 @@ class Converter:
             n = os.path.splitext(start)[0]
             convert(start, f"{n}.pdf")
 
-
-    
     def convert_audio_and_video(self,input_path, output_ext):
         start = str(input_path)
         n = os.path.splitext(start)[0]
