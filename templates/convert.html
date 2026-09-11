@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert Files</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+</head>
+<body>
+    <h2>File Converter</h2>
+    
+    <form action="/converter" method="post">
+        <label for="file_select">select file</label>
+        <select name="filename" id="file_select" required>
+            {% for file in files %}
+                <option value="{{ file.file_name }}">{{ file.file_name }}</option>
+            {% endfor %}
+            </select>
+            <label for="target_format">Convert To</label>
+            <select name="target_format" id="target_format" required>
+                <optgroup label="Documents">
+                    <option value="pdf">PDF (.pdf)</option>
+                    <option value="docx">Word (.docx)</option>
+                </optgroup>
+                <optgroup label="Images">
+                    <option value="jpg">JPG (.jpg)</option>
+                    <option value="png">PNG (.png)</option>
+                    <option value="webp">WebP (.webp)</option>
+                </optgroup>
+                <optgroup label="Media">
+                    <option value="mp3">MP3 (.mp3)</option>
+                    <option value="wav">WAV (.wav)</option>
+                    <option value="mp4">MP4 (.mp4)</option>
+                    <option value="mkv">MKV (.mkv)</option>
+                </optgroup>
+            </select>
+
+            <button type="submit">Convert</button>        
+    </form>
+
+    <a href="/" role="button">To Dashboard</a>
+</body>
+</html>
