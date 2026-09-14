@@ -2,13 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
     <title>Cloud Storage</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
+    >
 </head>
 <body>
     <h2>Synced Files</h2>
-    
+
     <table>
         <thead>
             <tr>
@@ -16,8 +22,10 @@
                 <th>File Name</th>
                 <th>Size (Bytes)</th>
                 <th>Last Modified</th>
+                <th>Action</th>
             </tr>
         </thead>
+
         <tbody>
             {% for file in files %}
             <tr>
@@ -25,6 +33,16 @@
                 <td>{{ file.file_name }}</td>
                 <td>{{ file.size }}</td>
                 <td>{{ file.time }}</td>
+                <td>
+                    <a
+                        href="{{ url_for(
+                            'download_file',
+                            filename=file.file_name
+                        ) }}"
+                    >
+                        <button type="button">Download</button>
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -33,12 +51,12 @@
     <form action="/upload" method="GET">
         <button type="submit">Upload</button>
     </form>
-    
+
     <form action="/add-device" method="POST">
         <button type="submit">Add Device</button>
     </form>
-    
-     <form action="/converter" method="GET">
+
+    <form action="/converter" method="GET">
         <button type="submit">Convert</button>
     </form>
 </body>
