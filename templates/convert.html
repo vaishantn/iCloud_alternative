@@ -10,6 +10,7 @@
     <h2>File Converter</h2>
     
     <form action="/converter" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <label for="file_select">select file</label>
         <select name="filename" id="file_select" required>
             {% for file in files %}

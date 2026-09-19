@@ -8,6 +8,7 @@
     <h2>Select a File or Folder</h2>
 
     <form action="/upload/complete" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         
         <!-- Option 1: Single File Picker -->
         <div>

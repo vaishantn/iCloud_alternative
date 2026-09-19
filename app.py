@@ -16,6 +16,7 @@ import urllib3
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from converter import Converter
+from flask_wtf.csrf import CSRFProtect
 
 load_dotenv()
 
@@ -23,6 +24,7 @@ app = Flask(__name__)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 app.config["SECRET_KEY"] = os.environ["FLASK_SECRET_KEY"]
+csrf = CSRFProtect(app)
 
 APP_PASSWORD = os.environ["APP_PASSWORD"]
 
@@ -220,4 +222,4 @@ def download_file(filename):
 
 if __name__ == "__main__":
  
-    app.run(host="0.0.0.0", port=5000, debug=True) # soon debug=False
+    app.run(host="127.0.0.1", port=5000, debug=True) # soon debug=False

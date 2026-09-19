@@ -123,6 +123,7 @@
     <!-- Logout remains at the top-right. -->
     <div class="logout-area">
         <form action="{{ url_for('logout') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit">Log out</button>
         </form>
     </div>
@@ -134,6 +135,7 @@
         </form>
 
         <form action="/add-device" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit">Add Device</button>
         </form>
 
