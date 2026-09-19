@@ -6,31 +6,44 @@ from flask import (
     render_template,
     request,
     send_from_directory,
+    session,
+    url_for,
 )
 from pathlib import Path
 from get_name import Get_Name
 import requests
 import urllib3
 from werkzeug.utils import secure_filename
-
+from dotenv import load_dotenv
 from converter import Converter
+
+load_dotenv()
 
 app = Flask(__name__)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+app.config["SECRET_KEY"] = os.environ["FLASK_SECRET_KEY"]
+
+APP_PASSWORD = os.environ["APP_PASSWORD"]
+
+
 # Dynamic path resolution for cross-platform portability
-SYNCED_FOLDER_PATH = os.path.join(
-    os.path.expanduser("~"), "Syncthing_save_folder"
+SYNCED_FOLDER_PATH = os.environ.get(
+    "SYNCED_FOLDER_PATH",
+    os.path.join(
+        os.path.expanduser("~"),
+        "Syncthing_save_folder",
+    ),
 )
 os.makedirs(SYNCED_FOLDER_PATH, exist_ok=True)
 
 # Relay & Storage Node Configuration
-api = "iYFR5ef9KvinxMCk924ZnnWGKwm4ReEJ"
+api = os.environ["SYNCTHING_API_KEY"]
 
 converter = Converter()
 
 
-sync_url = "http://localhost:8384"
+sync_url = os.environ["SYNCTHING_URL"]
 
 
 def is_running(host="127.0.0.1", port=8384):
@@ -49,21 +62,53 @@ def get_host_ip():
     finally:
         s.close()
     return ip
+def require_login():
+    return session.get("logged_in") is True
 
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        password = request.form.get("password", "")
+
+        if password == APP_PASSWORD:
+            session["logged_in"] = True
+            return redirect(url_for("home"))
+
+        return render_template(
+            "login.html",
+            error="Incorrect password.",
+        ), 401
+
+    return render_template("login.html")
+
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
 
 @app.route("/")
 def home():
+    if not require_login():
+        return redirect(url_for("login"))
     items = Get_Name.get_folders(SYNCTHING_URL=sync_url, API_KEY=api)
     return render_template("index.html", files=items)
 
 
 @app.route("/upload", methods=["GET"])
 def upload():
+    if not require_login():
+        return redirect(url_for("login"))
+    
     return render_template("file_add.html")
 
 
 @app.route("/upload/complete", methods=["POST"])
 def upload_complete():
+    if not require_login():
+        return redirect(url_for("login"))
+    
     if "selected_file" in request.files:
         file = request.files["selected_file"]
         if file.filename != "":
@@ -91,6 +136,9 @@ def upload_complete():
 
 @app.route("/add-device", methods=["GET", "POST"])
 def get_device_id():
+    if not require_login():
+        return redirect(url_for("login"))
+    
     headers = {"X-API-Key": api}
     response = requests.get(
         f"{sync_url}/rest/system/status", headers=headers, verify=False
@@ -104,6 +152,8 @@ def get_device_id():
 
 @app.route("/converter", methods=["GET", "POST"])
 def converter_page():
+    if not require_login():
+        return redirect(url_for("login"))
     if request.method == "POST":
         selected_file = request.form.get("filename")
         target_file = request.form.get("target_format")
@@ -137,6 +187,8 @@ def converter_page():
 
 @app.route("/download/<path:filename>", methods=["GET"])
 def download_file(filename):
+    if not require_login():
+        return redirect(url_for("login"))
     synced_folder = Path(SYNCED_FOLDER_PATH).resolve()
 
     # Make the requested filename/path absolute so we can validate it.
@@ -167,5 +219,5 @@ def download_file(filename):
 
 
 if __name__ == "__main__":
-    print(f"Connecting to Syncthing at: {sync_url}")
-    app.run(host="0.0.0.0", port=5000, debug=True)
+ 
+    app.run(host="0.0.0.0", port=5000, debug=True) # soon debug=False

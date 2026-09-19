@@ -6,21 +6,67 @@
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
-    <title>Cloud Storage</title>
+    <title>MyCloud</title>
+
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
     >
+
+    <style>
+        body {
+            min-height: 100vh;
+            position: relative;
+
+            /*
+                Leaves room so the bottom-right buttons do not cover
+                the final row of the file table.
+            */
+            padding-bottom: 100px;
+        }
+
+        .logout-area {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .actions-area {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .actions-area form,
+        .logout-area form {
+            margin: 0;
+        }
+
+        .folder-label {
+            color: #8a8a8a;
+        }
+    </style>
 </head>
+
 <body>
-    <h2>Synced Files</h2>
+    <h2>MyCloud Files</h2>
+
+    <p>
+        Files stored in your Syncthing shared folder.
+    </p>
 
     <table>
         <thead>
             <tr>
                 <th>Folder</th>
                 <th>File Name</th>
-                <th>Size (Bytes)</th>
+                <th>Type</th>
+                <th>Size</th>
                 <th>Last Modified</th>
                 <th>Action</th>
             </tr>
@@ -29,35 +75,71 @@
         <tbody>
             {% for file in files %}
             <tr>
-                <td><strong>{{ file.folder_name }}</strong></td>
-                <td>{{ file.file_name }}</td>
-                <td>{{ file.size }}</td>
-                <td>{{ file.time }}</td>
                 <td>
-                    <a
-                        href="{{ url_for(
-                            'download_file',
-                            filename=file.file_name
-                        ) }}"
-                    >
-                        <button type="button">Download</button>
-                    </a>
+                    <strong>{{ file.folder_name }}</strong>
+                </td>
+
+                <td>{{ file.file_name }}</td>
+
+                <td>
+                    {% if file.type == "folder" %}
+                        <span class="folder-label">Folder</span>
+                    {% else %}
+                        File
+                    {% endif %}
+                </td>
+
+                <td>{{ file.size }}</td>
+
+                <td>{{ file.time }}</td>
+
+                <td>
+                    {% if file.type == "file" %}
+                        <a
+                            href="{{ url_for(
+                                'download_file',
+                                filename=file.relative_path
+                            ) }}"
+                        >
+                            <button type="button">
+                                Download
+                            </button>
+                        </a>
+                    {% else %}
+                        <button type="button" disabled>
+                            Folder
+                        </button>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <form action="/upload" method="GET">
-        <button type="submit">Upload</button>
-    </form>
+    {% if not files %}
+        <p>No files or folders were found yet.</p>
+    {% endif %}
 
-    <form action="/add-device" method="POST">
-        <button type="submit">Add Device</button>
-    </form>
+    <!-- Logout remains at the top-right. -->
+    <div class="logout-area">
+        <form action="{{ url_for('logout') }}" method="POST">
+            <button type="submit">Log out</button>
+        </form>
+    </div>
 
-    <form action="/converter" method="GET">
-        <button type="submit">Convert</button>
-    </form>
+    <!-- Main actions remain at the bottom-right. -->
+    <div class="actions-area">
+        <form action="/upload" method="GET">
+            <button type="submit">Upload</button>
+        </form>
+
+        <form action="/add-device" method="POST">
+            <button type="submit">Add Device</button>
+        </form>
+
+        <form action="/converter" method="GET">
+            <button type="submit">Convert</button>
+        </form>
+    </div>
 </body>
 </html>

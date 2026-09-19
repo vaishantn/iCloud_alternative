@@ -1,10 +1,72 @@
+# =========================
 # VS Code settings and cache
+# =========================
 .vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# =========================
+# Python cache / bytecode
+# =========================
 __pycache__/
 *.py[cod]
 *$py.class
+
+# =========================
+# Private configuration
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Private keys / certificates
+# =========================
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+
+# =========================
+# Python virtual environments
+# =========================
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# =========================
+# Syncthing / user storage
+# =========================
+Syncthing_save_folder/
+uploads/
+converted/
+downloads/
+
+
+# =========================
+# Flask, tests, and logs
+# =========================
+instance/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.log
+
+# =========================
+# OS-generated files
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
