@@ -1,67 +1,95 @@
-# CloudFALL
+# A Self-Hosted iCloud Alternative
 
-> A private, self-hosted cloud dashboard for browsing, downloading, converting,
-> and synchronizing files across trusted devices.
+> A self-hosted cloud dashboard for browsing, downloading, converting, and
+> synchronizing files across devices with Syncthing, Flask, Raspberry Pi, and
+> Tailscale.
 
-CloudFALL is a Python and Flask web application that turns a Syncthing shared
-folder into a personal cloud-style dashboard. It is designed for private use
-with trusted devices—not as a public file-sharing website.
+This project is a Python and Flask web application that provides a browser-based
+dashboard for files stored in a Syncthing shared folder.
 
-CloudFALL combines:
+It supports browsing files, downloading files, converting supported formats,
+synchronizing with a Raspberry Pi, and securely accessing the dashboard from
+trusted devices through Tailscale HTTPS.
 
-- A Flask dashboard
-- Syncthing file synchronization
-- Raspberry Pi storage or backup support
-- File download and conversion tools
-- Tailscale private HTTPS remote access
+## Why I Built It
+
+I wanted to learn how cloud-storage systems work by building a self-hosted
+alternative from smaller pieces instead of only using third-party services.
+
+This project combines:
+
+- A Flask web dashboard
+- Syncthing device-to-device file synchronization
+- A Raspberry Pi storage or synchronization node
+- File conversion tools
+- Tailscale networking for secure HTTPS remote access
+- Security checks for downloads and file conversions
 
 ## Features
 
-- Password-protected dashboard
-- Browse files stored in a Syncthing shared folder
-- Download synced files through the web interface
+- Password-protected Flask dashboard
+- Browse files in a configured Syncthing shared folder
+- Download synchronized files from the browser
 - Convert supported document, image, audio, and video formats
-- Sync files between a Windows host and a Raspberry Pi with Syncthing
-- Private remote HTTPS access with Tailscale Serve
-- Safe path validation for download and conversion routes
-- Protection against `../` path-traversal attempts outside the storage folder
-- CSRF-protected forms
-- Environment-variable configuration for secrets and local settings
+- Synchronize files between a Windows computer and Raspberry Pi with Syncthing
+- Access the dashboard remotely over HTTPS using Tailscale Serve
+- Store local passwords, API keys, and configuration in `.env`
+- Use Flask-WTF CSRF protection for forms
+- Validate paths in download and conversion routes
+- Block `../` path-traversal attempts outside the configured storage folder
 
-## How It Works
+## Preview
 
-CloudFALL provides a website for interacting with files in a Syncthing shared
-folder.
+> Add screenshots before submitting.
 
-Syncthing handles the actual synchronization between devices. CloudFALL provides
-the dashboard for viewing, downloading, and converting files. Tailscale provides
-private HTTPS access from trusted devices outside the local network.
+![Login page](docs/screenshots/login.png)
+
+![Dashboard](docs/screenshots/dashboard.png)
+
+![File converter](docs/screenshots/converter.png)
+
+## Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| Python | Main application language |
+| Flask | Web dashboard and routes |
+| Flask-WTF | Forms and CSRF protection |
+| Syncthing | Device-to-device file synchronization |
+| Tailscale Serve | Remote HTTPS access |
+| Raspberry Pi | Optional storage or synchronization node |
+| OpenCV and Pillow | Image conversion |
+| PyMuPDF, pdf2docx, python-docx | PDF and document conversion |
+| imageio-ffmpeg | Audio and video conversion |
+| python-dotenv | Local environment configuration |
+
+## Architecture
 
 ```text
-Trusted device with Tailscale
+Remote device with Tailscale
         │
-        │ Private HTTPS connection
+        │ HTTPS connection
         ▼
 Tailscale Serve
         │
         ▼
-CloudFALL Flask dashboard
+Flask dashboard
 127.0.0.1:5000
         │
         ├── Browse and download files
         ├── Convert supported file types
-        └── Syncthing integration
+        └── Syncthing API integration
                 │
                 ▼
        Syncthing shared storage folder
                 │
                 ▼
-      Raspberry Pi / second Syncthing node
+      Raspberry Pi or second Syncthing node
 ```
 
 ## Requirements
 
-CloudFALL is currently developed and tested on Windows.
+This project is currently developed and tested on Windows.
 
 The host computer needs:
 
@@ -69,45 +97,65 @@ The host computer needs:
 - Syncthing
 - A configured Syncthing shared folder
 - A Syncthing API key
-- Tailscale for private remote access
-- Microsoft Word for DOCX-to-PDF conversion
-- Optional: a Raspberry Pi running Syncthing as a storage or backup node
+- Tailscale for private remote HTTPS access
+- Microsoft Word for DOCX-to-PDF conversion with `docx2pdf`
+- Optional: a Raspberry Pi running Syncthing
 
 Remote devices need:
 
 - A modern web browser
 - Tailscale installed and signed in with an authorized account
 
-## First-Time Setup
+## Installation
 
-### 1. Create a Python environment
+### 1. Download the project
 
-Open PowerShell in the CloudFALL project folder and run:
+Clone the repository:
+
+```powershell
+git clone [https://github.com/YOUR-GITHUB-USERNAME/YOUR-REPOSITORY-NAME.git](https://github.com/YOUR-GITHUB-USERNAME/YOUR-REPOSITORY-NAME.git)
+cd YOUR-REPOSITORY-NAME
+```
+
+Or download the repository as a ZIP file and extract it.
+
+### 2. Create a virtual environment
 
 ```powershell
 py -3 -m venv venv
+```
+
+### 3. Activate the virtual environment
+
+```powershell
 .\venv\Scripts\Activate.ps1
 ```
 
-If PowerShell blocks script activation, run:
+If PowerShell blocks the activation script, run this for the current PowerShell
+window:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\venv\Scripts\Activate.ps1
 ```
 
-### 2. Install dependencies
+### 4. Install dependencies
 
 ```powershell
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-### 3. Configure CloudFALL
+## Configuration
 
-Create a file named `.env` in the CloudFALL project folder.
+Copy `.env.example` to a new `.env` file:
 
-Use the following template and replace every placeholder with your own values:
+```powershell
+Copy-Item .env.example .env
+```
+
+Edit `.env` and replace the placeholder values with your own local
+configuration:
 
 ```env
 SECRET_KEY=replace-with-a-long-random-secret
@@ -120,152 +168,215 @@ SYNCTHING_API_KEY=replace-with-your-syncthing-api-key
 SYNCED_FOLDER_PATH=C:\path\to\your\syncthing-folder
 ```
 
-Keep `.env` private. It contains passwords, API keys, and paths specific to
-your computer.
+Keep `.env` private. It contains passwords, API keys, and computer-specific
+paths.
 
-### 4. Configure Syncthing
+Do not commit `.env` to GitHub.
 
-1. Install Syncthing on the host computer.
-2. Create or choose a folder that Syncthing will synchronize.
-3. Share that folder with your Raspberry Pi or other trusted devices.
-4. Copy the Syncthing API key into the `.env` file.
-5. Set `SYNCED_FOLDER_PATH` to the local path of the shared folder.
+## Syncthing Setup
 
-CloudFALL does not replace Syncthing. Syncthing performs the synchronization,
-while CloudFALL provides the browser-based dashboard.
+Syncthing performs the actual file synchronization. The Flask dashboard provides
+the browser interface for those synchronized files.
 
-## Start CloudFALL
+1. Install Syncthing on the Windows host computer.
+2. Create or select a shared folder in Syncthing.
+3. Share that folder with a Raspberry Pi or another trusted device.
+4. Copy the Syncthing API key into `.env`.
+5. Set `SYNCED_FOLDER_PATH` in `.env` to the local path of the Syncthing shared
+   folder.
 
-Open PowerShell in the CloudFALL project folder.
+Example:
 
-Activate the environment:
+```env
+SYNCED_FOLDER_PATH=C:\Users\YourName\Syncthing
+```
+
+Do not expose Syncthing's GUI or API port publicly:
+
+```text
+8384
+```
+
+## Run the App
+
+Activate the virtual environment:
 
 ```powershell
 .\venv\Scripts\Activate.ps1
 ```
 
-Start the application:
+Start the app:
 
 ```powershell
 python app.py
 ```
 
-Or start it without activating the environment:
+Or run it directly without activation:
 
 ```powershell
 .\venv\Scripts\python.exe app.py
 ```
 
-Open CloudFALL on the host computer:
+Open the dashboard on the host computer:
 
 ```text
 http://127.0.0.1:5000
 ```
 
-To stop CloudFALL, return to the PowerShell window and press:
+To stop the app, return to PowerShell and press:
 
 ```text
 Ctrl + C
 ```
 
-## Private Remote Access
+## Remote HTTPS Access
 
-CloudFALL uses Tailscale for private remote access.
+This project uses Tailscale Serve for private remote HTTPS access.
 
-Tailscale allows trusted devices to access CloudFALL securely without opening
-ports on the router or exposing the dashboard to the public internet.
+Tailscale lets authorized devices access the dashboard without router
+port-forwarding or exposing the Flask server directly to the public internet.
 
 ### Set up Tailscale
 
-1. Install Tailscale on the Windows computer hosting CloudFALL.
+1. Install Tailscale on the computer hosting the Flask app.
 2. Install Tailscale on every trusted phone, tablet, or computer that needs
    remote access.
-3. Sign in with an authorized Tailscale account.
-4. Start CloudFALL locally.
-5. In a second normal PowerShell window, run:
+3. Sign in with authorized Tailscale accounts.
+4. Start the Flask app locally.
+5. Open a second normal PowerShell window.
+6. Run:
 
    ```powershell
    tailscale serve localhost:5000
    ```
 
-6. Check the private HTTPS address:
+7. Check the HTTPS route:
 
    ```powershell
    tailscale serve status
    ```
 
-Tailscale displays a private address similar to:
+Tailscale displays an address similar to:
 
 ```text
 [https://your-device-name.your-tailnet.ts.net](https://your-device-name.your-tailnet.ts.net)
 ```
 
-Open that HTTPS address only from an authorized Tailscale-connected device.
+Open that address from an authorized Tailscale-connected device.
 
-### Important behavior
+The Flask application stays bound to:
 
-CloudFALL is available only while `app.py` is running.
+```text
+127.0.0.1:5000
+```
 
-When CloudFALL is closed, nothing is listening on local port `5000`, so the
-private Tailscale HTTPS address cannot load the dashboard.
+Tailscale Serve securely routes HTTPS traffic to that local application.
 
-Tailscale can remain connected while CloudFALL is closed. This allows other
-Tailscale services, such as a Raspberry Pi Syncthing node, to keep working.
+### When the app is closed
+
+The Tailscale connection can remain active while the Flask app is closed.
+
+However, when `app.py` is not running, nothing is listening on local port
+`5000`, so the Tailscale HTTPS address cannot load the dashboard.
+
+This lets Tailscale continue supporting other trusted devices, such as a
+Raspberry Pi Syncthing node, while the dashboard stays offline.
 
 ## Raspberry Pi Setup
 
-A Raspberry Pi is optional, but it can act as a storage or synchronization node.
+A Raspberry Pi is optional, but it can act as a storage, backup, or Syncthing
+synchronization node.
 
-Install Syncthing on the Raspberry Pi and share the same Syncthing folder with
-the Windows host computer.
+```text
+Windows computer running the Flask dashboard
+        │
+        │ Syncthing file synchronization
+        ▼
+Raspberry Pi running Syncthing
+```
 
-For private remote synchronization, install Tailscale on both:
+To use a Raspberry Pi:
 
-- The Windows CloudFALL host
-- The Raspberry Pi
+1. Install Syncthing on the Raspberry Pi.
+2. Pair the Raspberry Pi with the Windows computer in Syncthing.
+3. Share the same folder with both devices.
+4. Wait for Syncthing to finish synchronization.
+5. Optionally install Tailscale on the Raspberry Pi for secure remote
+   connectivity.
 
-The Raspberry Pi does not need `tailscale serve` unless it is hosting a web
-application itself.
+The Raspberry Pi does not need `tailscale serve` unless it is hosting its own
+web application.
 
 ## Security
 
-CloudFALL is intended for a small group of trusted users and devices.
+This project includes several security-focused design choices:
 
-Keep these security rules:
+- Flask runs with `debug=False`.
+- The Flask app listens on `127.0.0.1` for Tailscale Serve access.
+- Passwords, API keys, and secret keys are stored in `.env`.
+- Forms use CSRF protection through Flask-WTF.
+- Download and conversion routes validate requested paths.
+- Path validation blocks `../` attempts outside the configured storage folder.
+- Syncthing's GUI and API port `8384` are not exposed through the dashboard.
+- Tailscale Serve provides private HTTPS access without router port forwarding.
 
-- Use a strong, unique dashboard password.
-- Keep `debug=False` in `app.py`.
-- Keep Flask bound to `127.0.0.1`.
-- Store passwords, API keys, and secret keys in `.env`.
-- Never share your `.env` file.
-- Never expose Syncthing port `8384` publicly.
-- Never port-forward Flask port `5000`.
-- Do not use Tailscale Funnel for CloudFALL.
-- Keep Tailscale limited to trusted accounts and devices.
-- Keep CSRF protection enabled.
-- Keep the safe path checks in download and conversion routes.
-- Do not publish private Tailscale URLs, passwords, API keys, or personal files.
+Keep these rules:
 
-CloudFALL checks requested paths before downloading or converting files. This
-prevents requests using `../` from accessing files outside the configured
-Syncthing storage folder.
+- Do not publish `.env`.
+- Do not publish passwords or API keys.
+- Do not publish private Tailscale URLs.
+- Do not publish personal files or screenshots containing personal documents.
+- Do not port-forward Flask port `5000`.
+- Do not port-forward Syncthing port `8384`.
+- Do not use Tailscale Funnel for this project.
 
 ## File Conversion Notes
 
-CloudFALL supports conversion features based on the installed packages and
-programs available on the host computer.
+File conversion support depends on the programs and Python packages installed on
+the host computer.
 
-DOCX-to-PDF conversion requires Microsoft Word because CloudFALL uses
-`docx2pdf`.
+### Document conversion
 
-Image, PDF, audio, and video conversion support may depend on the installed
-Python packages and available converter tools.
+DOCX-to-PDF conversion uses `docx2pdf`, which requires Microsoft Word on
+Windows.
+
+### Image conversion
+
+Image conversion uses packages such as OpenCV and Pillow.
+
+### PDF conversion
+
+PDF and document conversion uses packages such as PyMuPDF, `pdf2docx`, and
+`python-docx`.
+
+### Audio and video conversion
+
+Audio and video conversion uses `imageio-ffmpeg` and depends on available host
+tools.
+
+## Demo
+
+> Add your demo video link here before submitting.
+
+Suggested demo walkthrough:
+
+1. Open the login page.
+2. Log in with a test account.
+3. Browse a Syncthing-backed folder.
+4. Download a sample file.
+5. Convert a test document or image.
+6. Show a file synchronizing between the Windows host and Raspberry Pi.
+7. Show Tailscale Serve providing an HTTPS route.
+8. Explain how the app blocks `../` path-traversal attempts.
+
+Use test files only. Do not show real passwords, API keys, private files,
+device IDs, or your full Tailscale hostname.
 
 ## Troubleshooting
 
 ### `ModuleNotFoundError: No module named 'flask'`
 
-The virtual environment is not active, or dependencies are not installed.
+The virtual environment is not active, or dependencies were not installed.
 
 Run:
 
@@ -275,44 +386,54 @@ python -m pip install -r requirements.txt
 python app.py
 ```
 
+### PowerShell blocks environment activation
+
+Run:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\venv\Scripts\Activate.ps1
+```
+
 ### Tailscale says `Logged out.`
 
-Sign in again:
+Run:
 
 ```powershell
 tailscale up
 ```
 
-Then complete sign-in in the browser.
+Complete the sign-in flow in your browser, then check:
+
+```powershell
+tailscale status
+```
 
 ### `tailscale serve status` says `No serve config`
 
-Configure the private proxy again:
+Run:
 
 ```powershell
 tailscale serve localhost:5000
-```
-
-Then verify:
-
-```powershell
 tailscale serve status
 ```
 
-### The Tailscale HTTPS address does not load
+### The Tailscale HTTPS URL does not load
 
 Check that:
 
-1. CloudFALL is still running.
-2. Tailscale is connected on the host computer.
-3. Tailscale is connected on the remote device.
-4. `tailscale serve status` shows a proxy to `localhost:5000`.
-5. The remote device is authorized in the same Tailscale network.
+- The Flask app is still running.
+- Tailscale is connected on the host computer.
+- Tailscale is connected on the remote device.
+- `tailscale serve status` points to `localhost:5000`.
+- The remote device is signed in to an authorized Tailscale account.
 
 ## Limitations
 
-- CloudFALL is currently developed and tested on Windows.
-- The host computer must be running for CloudFALL to be available.
-- Remote devices need Tailscale for private remote access.
+- This project is currently developed and tested on Windows.
+- The host computer must remain on for the dashboard to be available.
+- Remote HTTPS access requires Tailscale on authorized remote devices.
 - DOCX-to-PDF conversion requires Microsoft Word on Windows.
-- CloudFALL is designed for private trusted-device use, not public file sharing.
+- File conversion support depends on installed packages and host tools.
+- A Raspberry Pi, NAS, external drive, server, or another computer can be used
+  as an optional Syncthing storage or synchronization device.

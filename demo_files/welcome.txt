@@ -1,0 +1,4 @@
+Welcome to the public demo.
+
+This website displays test files only. It does not connect to a real Syncthing
+server, Raspberry Pi, local storage folder, or Tailscale network.
