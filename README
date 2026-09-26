@@ -40,13 +40,21 @@ This project combines:
 
 ## Preview
 
-> Add screenshots before submitting.
+### Login page
 
-![Login page](docs/screenshots/login.png)
+![MyCloud login page](images/login-page.png)
 
-![Dashboard](docs/screenshots/dashboard.png)
+### File dashboard
 
-![File converter](docs/screenshots/converter.png)
+![MyCloud file dashboard](images/file-dashboard.png)
+
+### Upload page
+
+![MyCloud upload page](images/upload-page.png)
+
+### File converter
+
+![MyCloud file converter](images/converter.png)
 
 ## Tech Stack
 
