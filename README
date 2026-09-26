@@ -42,19 +42,19 @@ This project combines:
 
 ### Login page
 
-![MyCloud login page](images/login-page.png)
+![MyCloud login page](./images/login-page.png)
 
 ### File dashboard
 
-![MyCloud file dashboard](images/file-dashboard.png)
+![MyCloud file dashboard](./images/file-dashboard.png)
 
 ### Upload page
 
-![MyCloud upload page](images/upload-page.png)
+![MyCloud upload page](./images/upload-page.png)
 
 ### File converter
 
-![MyCloud file converter](images/converter.png)
+![MyCloud file converter](./images/converter.png)
 
 ## Tech Stack
 
