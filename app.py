@@ -155,8 +155,10 @@ def upload():
     if not require_login():
         return redirect(url_for("login"))
 
-    if DEMO_MODE:
-        abort(403, description="Uploading is disabled in the public demo.")
+    return render_template(
+        "file_add.html",
+        demo_mode=DEMO_MODE,
+    )
 
     return render_template("file_add.html")
 
@@ -241,10 +243,13 @@ def converter_page():
     if not require_login():
         return redirect(url_for("login"))
 
-    if DEMO_MODE:
-        abort(403, description="Conversion is disabled in the public demo.")
-
     if request.method == "POST":
+        if DEMO_MODE:
+            abort(
+                403,
+                description="File conversion is disabled in the public demo.",
+            )
+
         selected_file = request.form.get("filename")
         target_file = request.form.get("target_format")
 
@@ -281,12 +286,19 @@ def converter_page():
 
         return redirect(url_for("home"))
 
-    items = Get_Name.get_folders(
-        SYNCTHING_URL=sync_url,
-        API_KEY=api,
-    )
+    if DEMO_MODE:
+        items = get_demo_files()
+    else:
+        items = Get_Name.get_folders(
+            SYNCTHING_URL=sync_url,
+            API_KEY=api,
+        )
 
-    return render_template("convert.html", files=items)
+    return render_template(
+        "convert.html",
+        files=items,
+        demo_mode=DEMO_MODE,
+    )
 
 
 @app.route("/download/<path:filename>", methods=["GET"])
