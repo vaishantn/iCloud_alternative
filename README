@@ -1,153 +1,148 @@
 # A Self-Hosted iCloud Alternative
 
-> A self-hosted cloud dashboard for browsing, downloading, converting, and
-> synchronizing files across devices with Syncthing, Flask, Raspberry Pi, and
-> Tailscale.
+> A self-hosted cloud dashboard for browsing, downloading, converting, and synchronizing files across devices with Syncthing, Flask, a Raspberry Pi, and Tailscale.
 
-This project is a Python and Flask web application that provides a browser-based
-dashboard for files stored in a Syncthing shared folder.
+This project is a Python and Flask web application that provides a browser-based dashboard for files stored in a Syncthing shared folder.
 
-It supports browsing files, downloading files, converting supported formats,
-synchronizing with a Raspberry Pi, and securely accessing the dashboard from
-trusted devices through Tailscale HTTPS.
+It supports browsing files, downloading files, uploading files or folders, converting supported formats, synchronizing files with a Raspberry Pi, and securely accessing the dashboard from trusted devices through Tailscale HTTPS.
 
 ## Why I Built It
 
-I wanted to learn how cloud-storage systems work by building a self-hosted
-alternative from smaller pieces instead of only using third-party services.
+I wanted to learn how cloud-storage systems work by building a self-hosted alternative from smaller pieces instead of relying entirely on third-party cloud-storage services.
 
 This project combines:
 
-- A Flask web dashboard
-- Syncthing device-to-device file synchronization
-- A Raspberry Pi storage or synchronization node
-- File conversion tools
-- Tailscale networking for secure HTTPS remote access
-- Security checks for downloads and file conversions
+- **Flask web dashboard** for file management
+- **Syncthing** for device-to-device file synchronization
+- **Raspberry Pi** as a dedicated storage or synchronization node
+- **File conversion tools** for documents, images, audio, and video
+- **Tailscale networking** for private HTTPS remote access
+- **Security checks** for file-download paths and file conversions
 
 ## Features
 
-- Password-protected Flask dashboard
-- Browse files in a configured Syncthing shared folder
-- Download synchronized files from the browser
-- Convert supported document, image, audio, and video formats
-- Synchronize files between a Windows computer and Raspberry Pi with Syncthing
-- Access the dashboard remotely over HTTPS using Tailscale Serve
-- Store local passwords, API keys, and configuration in `.env`
-- Use Flask-WTF CSRF protection for forms
-- Validate paths in download and conversion routes
-- Block `../` path-traversal attempts outside the configured storage folder
-
-## Preview
-
-### Login page
-
-![MyCloud login page](./images/login-page.png)
-
-### File dashboard
-
-![MyCloud file dashboard](./images/file-dashboard.png)
-
-### Upload page
-
-![MyCloud upload page](./images/upload-page.png)
-
-### File converter
-
-![MyCloud file converter](./images/converter.png)
+- **Password-protected access:** Secure login for the Flask dashboard
+- **File browser:** View files and folders in a configured Syncthing shared folder
+- **Direct downloads:** Download synchronized files from the browser
+- **Uploads:** Upload individual files or supported folder structures to the local shared folder
+- **File conversion:** Convert supported document, image, audio, and video formats
+- **Device sync:** Synchronize files between a Windows computer and Raspberry Pi using Syncthing
+- **Remote HTTPS access:** Access the dashboard privately over HTTPS from authorized Tailscale devices
+- **Environment configuration:** Store local passwords, API keys, and configuration values in `.env`
+- **Form protection:** Use Flask-WTF CSRF protection for forms
+- **Path validation:** Validate file paths and block `../` path-traversal attempts outside the storage directory
+- **Public demo mode:** Use safe files in `demo_files/` without exposing a real Syncthing folder, API key, Raspberry Pi, or Tailscale network
 
 ## Tech Stack
 
 | Technology | Purpose |
 |---|---|
 | Python | Main application language |
-| Flask | Web dashboard and routes |
-| Flask-WTF | Forms and CSRF protection |
+| Flask | Web framework and routing |
+| Flask-WTF | CSRF protection for forms |
 | Syncthing | Device-to-device file synchronization |
-| Tailscale Serve | Remote HTTPS access |
+| Tailscale Serve | Private remote HTTPS access |
 | Raspberry Pi | Optional storage or synchronization node |
-| OpenCV and Pillow | Image conversion |
+| OpenCV and Pillow | Image processing and conversion |
 | PyMuPDF, pdf2docx, python-docx | PDF and document conversion |
 | imageio-ffmpeg | Audio and video conversion |
 | python-dotenv | Local environment configuration |
+| Render | Hosted public demo deployment |
+| Gunicorn | Production Python web server for Render |
+
+## Preview
+
+The screenshots below use test files and do not expose personal files, passwords, Syncthing API keys, device IDs, or private Tailscale information.
+
+### Login Page
+
+![MyCloud login page](./images/login-page.png)
+
+### File Dashboard
+
+![MyCloud file dashboard](./images/file-dashboard.png)
+
+### Upload Page
+
+![MyCloud upload page](./images/upload-page.png)
+
+### File Converter
+
+![MyCloud file converter](./images/converter.png)
 
 ## Architecture
 
 ```text
-Remote device with Tailscale
+Remote Device with Tailscale
         │
-        │ HTTPS connection
+        │ Private HTTPS connection
         ▼
 Tailscale Serve
         │
         ▼
-Flask dashboard
-127.0.0.1:5000
+Flask Dashboard (127.0.0.1:5000)
         │
         ├── Browse and download files
+        ├── Upload files and folders
         ├── Convert supported file types
         └── Syncthing API integration
                 │
                 ▼
-       Syncthing shared storage folder
+Syncthing Shared Storage Folder
                 │
                 ▼
-      Raspberry Pi or second Syncthing node
+Raspberry Pi / Secondary Syncthing Node
 ```
 
 ## Requirements
 
-This project is currently developed and tested on Windows.
+This project was developed and tested on Windows.
 
-The host computer needs:
+### Host Computer Requirements
 
 - Python 3
-- Syncthing
-- A configured Syncthing shared folder
-- A Syncthing API key
+- Syncthing with an active shared folder
+- Syncthing API key
 - Tailscale for private remote HTTPS access
-- Microsoft Word for DOCX-to-PDF conversion with `docx2pdf`
-- Optional: a Raspberry Pi running Syncthing
+- Microsoft Word for DOCX-to-PDF conversion through `docx2pdf`
+- Optional: Raspberry Pi running Syncthing
 
-Remote devices need:
+### Remote Device Requirements
 
-- A modern web browser
-- Tailscale installed and signed in with an authorized account
+- Modern web browser
+- Tailscale installed and signed in to an authorized account when using private remote access
 
 ## Installation
 
-### 1. Download the project
-
-Clone the repository:
+### 1. Clone the Repository
 
 ```powershell
-git clone [https://github.com/YOUR-GITHUB-USERNAME/YOUR-REPOSITORY-NAME.git](https://github.com/YOUR-GITHUB-USERNAME/YOUR-REPOSITORY-NAME.git)
-cd YOUR-REPOSITORY-NAME
+git clone [https://github.com/vaishantn/iCloud_alternative.git](https://github.com/vaishantn/iCloud_alternative.git)
+cd iCloud_alternative
 ```
 
-Or download the repository as a ZIP file and extract it.
+Alternatively, download the repository as a ZIP file from GitHub and extract it.
 
-### 2. Create a virtual environment
+### 2. Create a Virtual Environment
 
 ```powershell
 py -3 -m venv venv
 ```
 
-### 3. Activate the virtual environment
+### 3. Activate the Virtual Environment
 
 ```powershell
 .\venv\Scripts\Activate.ps1
 ```
 
-If PowerShell blocks the activation script, run this for the current PowerShell
-window:
+If PowerShell blocks the activation script, run this command for the current PowerShell window:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\venv\Scripts\Activate.ps1
 ```
 
-### 4. Install dependencies
+### 4. Install Dependencies
 
 ```powershell
 python -m pip install --upgrade pip
@@ -156,18 +151,24 @@ python -m pip install -r requirements.txt
 
 ## Configuration
 
-Copy `.env.example` to a new `.env` file:
+Create a `.env` file in the project root.
+
+If the repository contains an `.env.example` file, copy it:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-Edit `.env` and replace the placeholder values with your own local
-configuration:
+Otherwise, create `.env` manually:
+
+```powershell
+notepad .env
+```
+
+Add your local configuration:
 
 ```env
-SECRET_KEY=replace-with-a-long-random-secret
-APP_USERNAME=replace-with-your-username
+FLASK_SECRET_KEY=replace-with-a-long-random-secret
 APP_PASSWORD=replace-with-a-strong-password
 
 SYNCTHING_URL=http://127.0.0.1:8384
@@ -176,36 +177,34 @@ SYNCTHING_API_KEY=replace-with-your-syncthing-api-key
 SYNCED_FOLDER_PATH=C:\path\to\your\syncthing-folder
 ```
 
-Keep `.env` private. It contains passwords, API keys, and computer-specific
-paths.
+Keep `.env` private. It contains passwords, API keys, and computer-specific paths.
 
 Do not commit `.env` to GitHub.
 
 ## Syncthing Setup
 
-Syncthing performs the actual file synchronization. The Flask dashboard provides
-the browser interface for those synchronized files.
+Syncthing performs the actual file synchronization. The Flask dashboard provides the browser interface for viewing, downloading, uploading, and converting files stored in the synced local folder.
 
 1. Install Syncthing on the Windows host computer.
 2. Create or select a shared folder in Syncthing.
 3. Share that folder with a Raspberry Pi or another trusted device.
 4. Copy the Syncthing API key into `.env`.
-5. Set `SYNCED_FOLDER_PATH` in `.env` to the local path of the Syncthing shared
-   folder.
+5. Set `SYNCED_FOLDER_PATH` in `.env` to the local folder path used by Syncthing.
+6. Wait for Syncthing to finish synchronization before attempting to download newly added files.
 
 Example:
 
 ```env
-SYNCED_FOLDER_PATH=C:\Users\YourName\Syncthing
+SYNCED_FOLDER_PATH=C:\Users\YourName\Syncthing_savefolder
 ```
 
-Do not expose Syncthing's GUI or API port publicly:
+Do not publicly expose the Syncthing GUI or API port:
 
 ```text
 8384
 ```
 
-## Run the App
+## Run Locally
 
 Activate the virtual environment:
 
@@ -213,56 +212,86 @@ Activate the virtual environment:
 .\venv\Scripts\Activate.ps1
 ```
 
-Start the app:
+Start the Flask application:
 
 ```powershell
 python app.py
 ```
 
-Or run it directly without activation:
+Or start it directly without activating the environment:
 
 ```powershell
 .\venv\Scripts\python.exe app.py
 ```
 
-Open the dashboard on the host computer:
+Open the local dashboard:
 
 ```text
 http://127.0.0.1:5000
 ```
 
-To stop the app, return to PowerShell and press:
+To stop the server, return to PowerShell and press:
 
 ```text
 Ctrl + C
+```
+
+## Public Demo Mode
+
+The public demo is intentionally separated from the real Syncthing setup.
+
+When this environment variable is enabled:
+
+```env
+DEMO_MODE=true
+```
+
+the app reads only from:
+
+```text
+demo_files/
+```
+
+The demo should contain only harmless test files. It should not use real personal files, Syncthing credentials, Raspberry Pi access, or Tailscale network information.
+
+To test demo mode locally in PowerShell:
+
+```powershell
+$env:DEMO_MODE = "true"
+.\venv\Scripts\python.exe app.py
+```
+
+To return to normal local mode:
+
+```powershell
+Remove-Item Env:\DEMO_MODE -ErrorAction SilentlyContinue
+.\venv\Scripts\python.exe app.py
 ```
 
 ## Remote HTTPS Access
 
 This project uses Tailscale Serve for private remote HTTPS access.
 
-Tailscale lets authorized devices access the dashboard without router
-port-forwarding or exposing the Flask server directly to the public internet.
+Tailscale lets authorized devices access the dashboard without router port-forwarding or exposing the Flask server directly to the public internet.
 
-### Set up Tailscale
+### Set Up Tailscale Serve
 
-1. Install Tailscale on the computer hosting the Flask app.
-2. Install Tailscale on every trusted phone, tablet, or computer that needs
-   remote access.
+1. Install Tailscale on the computer hosting the Flask application.
+2. Install Tailscale on every trusted phone, tablet, or computer that needs remote access.
 3. Sign in with authorized Tailscale accounts.
-4. Start the Flask app locally.
-5. Open a second normal PowerShell window.
+4. Start the Flask application locally.
+5. Open a second PowerShell window.
 6. Run:
 
-   ```powershell
-   tailscale serve localhost:5000
-   ```
+```powershell
+tailscale serve localhost:5000
+```
 
 7. Check the HTTPS route:
 
-   ```powershell
-   tailscale serve status
-   ```
+```powershell
+tailscale serve status
+```
 
 Tailscale displays an address similar to:
 
@@ -278,29 +307,24 @@ The Flask application stays bound to:
 127.0.0.1:5000
 ```
 
-Tailscale Serve securely routes HTTPS traffic to that local application.
+Tailscale Serve securely routes HTTPS traffic to the local Flask application.
 
-### When the app is closed
+### When the App Is Closed
 
-The Tailscale connection can remain active while the Flask app is closed.
+Tailscale can remain connected while the Flask application is closed.
 
-However, when `app.py` is not running, nothing is listening on local port
-`5000`, so the Tailscale HTTPS address cannot load the dashboard.
-
-This lets Tailscale continue supporting other trusted devices, such as a
-Raspberry Pi Syncthing node, while the dashboard stays offline.
+However, when `app.py` is not running, nothing is listening on local port `5000`, so the Tailscale HTTPS address cannot load the dashboard.
 
 ## Raspberry Pi Setup
 
-A Raspberry Pi is optional, but it can act as a storage, backup, or Syncthing
-synchronization node.
+A Raspberry Pi is optional, but it can act as a storage, backup, or Syncthing synchronization node.
 
 ```text
-Windows computer running the Flask dashboard
+Windows Computer Running Flask Dashboard
         │
-        │ Syncthing file synchronization
+        │ Syncthing File Synchronization
         ▼
-Raspberry Pi running Syncthing
+Raspberry Pi Running Syncthing
 ```
 
 To use a Raspberry Pi:
@@ -308,77 +332,72 @@ To use a Raspberry Pi:
 1. Install Syncthing on the Raspberry Pi.
 2. Pair the Raspberry Pi with the Windows computer in Syncthing.
 3. Share the same folder with both devices.
-4. Wait for Syncthing to finish synchronization.
-5. Optionally install Tailscale on the Raspberry Pi for secure remote
-   connectivity.
+4. Wait for Syncthing to complete synchronization.
+5. Optionally install Tailscale on the Raspberry Pi for secure remote connectivity.
 
-The Raspberry Pi does not need `tailscale serve` unless it is hosting its own
-web application.
+The Raspberry Pi does not need `tailscale serve` unless it hosts its own web application.
 
-## Security
+## Security Notes
 
 This project includes several security-focused design choices:
 
-- Flask runs with `debug=False`.
-- The Flask app listens on `127.0.0.1` for Tailscale Serve access.
-- Passwords, API keys, and secret keys are stored in `.env`.
-- Forms use CSRF protection through Flask-WTF.
-- Download and conversion routes validate requested paths.
-- Path validation blocks `../` attempts outside the configured storage folder.
-- Syncthing's GUI and API port `8384` are not exposed through the dashboard.
-- Tailscale Serve provides private HTTPS access without router port forwarding.
+- Flask runs with `debug=False`
+- The Flask app listens on `127.0.0.1` for local and Tailscale Serve access
+- Passwords, API keys, and secret keys are stored in `.env`
+- Forms use CSRF protection through Flask-WTF
+- Download routes validate requested paths
+- Path validation blocks `../` attempts outside the configured storage folder
+- Syncthing GUI and API port `8384` are not exposed through the dashboard
+- Tailscale Serve provides private HTTPS access without router port-forwarding
+- Public demo mode uses safe test data rather than actual synced files
 
-Keep these rules:
+### Important Rules
 
-- Do not publish `.env`.
-- Do not publish passwords or API keys.
-- Do not publish private Tailscale URLs.
-- Do not publish personal files or screenshots containing personal documents.
-- Do not port-forward Flask port `5000`.
-- Do not port-forward Syncthing port `8384`.
-- Do not use Tailscale Funnel for this project.
+- Do not publish `.env`
+- Do not publish passwords, API keys, or Flask secret keys
+- Do not publish private Tailscale URLs
+- Do not publish personal files or screenshots containing personal documents
+- Do not port-forward Flask port `5000`
+- Do not port-forward Syncthing port `8384`
+- Do not use Tailscale Funnel for the private local version of this project
 
 ## File Conversion Notes
 
-File conversion support depends on the programs and Python packages installed on
-the host computer.
+File conversion support depends on the programs and Python packages installed on the host computer.
 
-### Document conversion
+### Document Conversion
 
-DOCX-to-PDF conversion uses `docx2pdf`, which requires Microsoft Word on
-Windows.
+DOCX-to-PDF conversion uses `docx2pdf`, which requires Microsoft Word on Windows.
 
-### Image conversion
+### Image Conversion
 
 Image conversion uses packages such as OpenCV and Pillow.
 
-### PDF conversion
+### PDF Conversion
 
-PDF and document conversion uses packages such as PyMuPDF, `pdf2docx`, and
-`python-docx`.
+PDF and document conversion uses packages such as PyMuPDF, `pdf2docx`, and `python-docx`.
 
-### Audio and video conversion
+### Audio and Video Conversion
 
-Audio and video conversion uses `imageio-ffmpeg` and depends on available host
-tools.
+Audio and video conversion uses `imageio-ffmpeg` and may depend on available host tools.
 
 ## Demo
 
 > Add your demo video link here before submitting.
 
-Suggested demo walkthrough:
+Suggested demonstration walkthrough:
 
 1. Open the login page.
 2. Log in with a test account.
 3. Browse a Syncthing-backed folder.
-4. Download a sample file.
+4. Upload or download a safe sample file.
 5. Convert a test document or image.
-6. Show a file synchronizing between the Windows host and Raspberry Pi.
-7. Show Tailscale Serve providing an HTTPS route.
+6. Show file synchronization between the Windows host and Raspberry Pi.
+7. Show Tailscale Serve providing a private HTTPS route.
 8. Explain how the app blocks `../` path-traversal attempts.
+9. Show the public Render demo using only files from `demo_files/`.
 
-Use test files only. Do not show real passwords, API keys, private files,
-device IDs, or your full Tailscale hostname.
+Use test files only. Do not show real passwords, API keys, personal files, device IDs, or your complete Tailscale hostname.
 
 ## Troubleshooting
 
@@ -394,7 +413,7 @@ python -m pip install -r requirements.txt
 python app.py
 ```
 
-### PowerShell blocks environment activation
+### PowerShell Blocks Environment Activation
 
 Run:
 
@@ -403,7 +422,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\venv\Scripts\Activate.ps1
 ```
 
-### Tailscale says `Logged out.`
+### Tailscale Says `Logged out`
 
 Run:
 
@@ -417,7 +436,7 @@ Complete the sign-in flow in your browser, then check:
 tailscale status
 ```
 
-### `tailscale serve status` says `No serve config`
+### `tailscale serve status` Says `No serve config`
 
 Run:
 
@@ -426,22 +445,32 @@ tailscale serve localhost:5000
 tailscale serve status
 ```
 
-### The Tailscale HTTPS URL does not load
+### The Tailscale HTTPS URL Does Not Load
 
 Check that:
 
-- The Flask app is still running.
-- Tailscale is connected on the host computer.
-- Tailscale is connected on the remote device.
-- `tailscale serve status` points to `localhost:5000`.
-- The remote device is signed in to an authorized Tailscale account.
+- The Flask application is still running
+- Tailscale is connected on the host computer
+- Tailscale is connected on the remote device
+- `tailscale serve status` points to `localhost:5000`
+- The remote device is signed in to an authorized Tailscale account
+
+### Render Build Fails on `pywin32`
+
+Render uses Linux, while `pywin32` is a Windows-only dependency.
+
+Remove this line from `requirements.txt` before deploying to Render:
+
+```text
+pywin32==312
+```
 
 ## Limitations
 
-- This project is currently developed and tested on Windows.
-- The host computer must remain on for the dashboard to be available.
-- Remote HTTPS access requires Tailscale on authorized remote devices.
-- DOCX-to-PDF conversion requires Microsoft Word on Windows.
-- File conversion support depends on installed packages and host tools.
-- A Raspberry Pi, NAS, external drive, server, or another computer can be used
-  as an optional Syncthing storage or synchronization device.
+- This project was developed and tested primarily on Windows
+- The host computer must remain powered on for the local dashboard to be available
+- Private remote HTTPS access requires Tailscale on authorized remote devices
+- DOCX-to-PDF conversion requires Microsoft Word on Windows
+- File conversion support depends on installed packages and host tools
+- A Raspberry Pi, NAS, external drive, server, or another computer can act as a Syncthing storage or synchronization node
+- The public Render demo is intentionally limited to safe sample files and does not connect to a real Syncthing instance
