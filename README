@@ -50,7 +50,6 @@ This project combines:
 | Render | Hosted public demo deployment |
 | Gunicorn | Production Python web server for Render |
 
-
 ## Architecture
 
 ```text
@@ -134,19 +133,13 @@ python -m pip install -r requirements.txt
 
 Create a `.env` file in the project root.
 
-If the repository contains an `.env.example` file, copy it:
+Copy the included example file:
 
 ```powershell
-Copy-Item .env.example .env
+Copy-Item .env_example .env
 ```
 
-Otherwise, create `.env` manually:
-
-```powershell
-notepad .env
-```
-
-Add your local configuration:
+Edit `.env` and add your local configuration:
 
 ```env
 FLASK_SECRET_KEY=replace-with-a-long-random-secret
@@ -227,7 +220,7 @@ When this environment variable is enabled:
 DEMO_MODE=true
 ```
 
-the app reads only from:
+the application reads only from:
 
 ```text
 demo_files/
