@@ -50,25 +50,6 @@ This project combines:
 | Render | Hosted public demo deployment |
 | Gunicorn | Production Python web server for Render |
 
-## Preview
-
-The screenshots below use test files and do not expose personal files, passwords, Syncthing API keys, device IDs, or private Tailscale information.
-
-### Login Page
-
-![MyCloud login page](./images/login-page.png)
-
-### File Dashboard
-
-![MyCloud file dashboard](./images/file-dashboard.png)
-
-### Upload Page
-
-![MyCloud upload page](./images/upload-page.png)
-
-### File Converter
-
-![MyCloud file converter](./images/converter.png)
 
 ## Architecture
 
