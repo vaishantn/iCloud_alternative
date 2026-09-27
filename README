@@ -97,7 +97,7 @@ This project was developed and tested on Windows.
 ### 1. Clone the Repository
 
 ```powershell
-git clone [https://github.com/vaishantn/iCloud_alternative.git](https://github.com/vaishantn/iCloud_alternative.git)
+git clone https://github.com/vaishantn/iCloud_alternative.git
 cd iCloud_alternative
 ```
 
@@ -270,7 +270,7 @@ tailscale serve status
 Tailscale displays an address similar to:
 
 ```text
-[https://your-device-name.your-tailnet.ts.net](https://your-device-name.your-tailnet.ts.net)
+https://your-device-name.your-tailnet.ts.net
 ```
 
 Open that address from an authorized Tailscale-connected device.
