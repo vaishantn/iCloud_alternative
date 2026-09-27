@@ -35,20 +35,20 @@ This project combines:
 
 ## Tech Stack
 
-| Technology | Purpose |
-|---|---|
-| Python | Main application language |
-| Flask | Web framework and routing |
-| Flask-WTF | CSRF protection for forms |
-| Syncthing | Device-to-device file synchronization |
-| Tailscale Serve | Private remote HTTPS access |
-| Raspberry Pi | Optional storage or synchronization node |
-| OpenCV and Pillow | Image processing and conversion |
-| PyMuPDF, pdf2docx, python-docx | PDF and document conversion |
-| imageio-ffmpeg | Audio and video conversion |
-| python-dotenv | Local environment configuration |
-| Render | Hosted public demo deployment |
-| Gunicorn | Production Python web server for Render |
+| Technology                     | Purpose                                  |
+| ------------------------------ | ---------------------------------------- |
+| Python                         | Main application language                |
+| Flask                          | Web framework and routing                |
+| Flask-WTF                      | CSRF protection for forms                |
+| Syncthing                      | Device-to-device file synchronization    |
+| Tailscale Serve                | Private remote HTTPS access              |
+| Raspberry Pi                   | Optional storage or synchronization node |
+| OpenCV and Pillow              | Image processing and conversion          |
+| PyMuPDF, pdf2docx, python-docx | PDF and document conversion              |
+| imageio-ffmpeg                 | Audio and video conversion               |
+| python-dotenv                  | Local environment configuration          |
+| Render                         | Hosted public demo deployment            |
+| Gunicorn                       | Production Python web server for Render  |
 
 ## Architecture
 
@@ -448,3 +448,4 @@ pywin32==312
 - File conversion support depends on installed packages and host tools
 - A Raspberry Pi, NAS, external drive, server, or another computer can act as a Syncthing storage or synchronization node
 - The public Render demo is intentionally limited to safe sample files and does not connect to a real Syncthing instance
+
