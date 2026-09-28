@@ -42,10 +42,14 @@
             required
             {% if demo_mode %}disabled{% endif %}
         >
+            <option value="">Choose a file</option>
+
             {% for file in files %}
-                <option value="{{ file.file_name }}">
-                    {{ file.file_name }}
-                </option>
+                {% if file.type == "file" %}
+                    <option value="{{ file.relative_path }}">
+                        {{ file.relative_path }}
+                    </option>
+                {% endif %}
             {% endfor %}
         </select>
 

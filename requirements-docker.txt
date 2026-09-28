@@ -1,0 +1,10 @@
+Flask
+Flask-WTF
+gunicorn
+python-dotenv
+requests
+urllib3
+Werkzeug
+Pillow
+pdf2docx
+imageio-ffmpeg
