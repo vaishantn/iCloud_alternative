@@ -1,3 +1,10 @@
+## Markdown Test
+
+```powershell
+tailscale up
+```
+
+This should be a normal paragraph.
 # MyCloud
 
 A self-hosted personal cloud file manager that runs on your computer with Docker and stores files in your own Syncthing folder.
@@ -53,7 +60,7 @@ Install these on the Windows computer that will host MyCloud:
 
 ```powershell
 git clone https://github.com/vaishantn/iCloud_alternative.git
-cd YOUR-REPOSITORY-NAME
+cd iCloud_alternative
 ```
 
 ### 2. Set up Syncthing
