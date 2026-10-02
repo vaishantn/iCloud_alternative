@@ -353,8 +353,8 @@ requirements.txt           Python dependencies
 .env                       Private configuration; do not commit
 ```
 
-## License
+License
 
-No license file has been added to this repository yet.
+This project is licensed under the MIT License.
 
-If you want other people to legally reuse, modify, and distribute the project, add a license file such as the MIT License and update this section accordingly.
+See the LICENSE file for the full license text.
