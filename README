@@ -4,73 +4,147 @@
 
 MyCloud is a secure personal cloud workspace that runs on your computer or Raspberry Pi with Docker. It gives you one browser dashboard for your files while Syncthing keeps selected folders synchronized across the devices you trust.
 
-MyCloud gives you a browser interface to view, upload, download, and convert files while Syncthing handles syncing them to your other trusted devices.
+Upload a file from your phone, download it from your laptop, convert it in the browser, and let Syncthing distribute the result to your connected devices. MyCloud is built around local control: your files stay in the folder you choose instead of being stored in a separate MyCloud cloud account.
 
 ## Features
 
-- View files from a local Syncthing folder
-- Upload files and folders from a browser
-- Download files from a browser
-- Convert PDF files to DOCX
-- Convert JPG, PNG, and WebP images
-- Convert supported audio and video formats
-- Protect the website with a password
-- Run locally with Docker Desktop
-- Sync files between your devices using Syncthing
-- Optional secure remote access using Tailscale
-- No router port forwarding required
+### Secure by design
+
+- Keeps MyCloud focused on files stored in a local folder you control
+- Protects the MyCloud dashboard with a password
+- Uses Syncthing to synchronize files only between devices you intentionally connect and authorize
+- Supports private remote access through Tailscale, so you can reach MyCloud away from home without opening a router port
+- Keeps MyCloud off the public internet when using Tailscale Serve instead of a public sharing service
+- Lets you access the dashboard from trusted devices such as your phone, tablet, laptop, desktop, or Raspberry Pi
+- Runs in Docker so the app can be started consistently without manually installing Python packages one by one
+
+### A complete file workspace
+
+- View files from the selected Syncthing folder in a browser dashboard
+- Upload individual files directly from the browser
+- Upload an entire folder while preserving its nested folder structure
+- Download files from the dashboard
+- Work with the same files that are available in your chosen Syncthing folder
+- Use MyCloud locally at `http://localhost:5000`
+- Use the dashboard from a phone or another computer through private Tailscale access
+
+### Built-in file conversion
+
+- Convert PDF files to DOCX documents
+- Convert images between JPG, PNG, and WebP
+- Convert supported audio and video files to MP3, WAV, MP4, or MKV
+- Place converted files back into the synced folder automatically
+- Allow Syncthing to distribute converted files to connected devices after conversion
+
+### Your devices, connected
+
+- Connect a laptop, desktop, Raspberry Pi, phone, or other trusted Syncthing-compatible device
+- Keep a selected folder synchronized across the devices you choose
+- Add a file from one device and allow Syncthing to copy it to other paired devices
+- Use MyCloud as the browser-based place to manage files while Syncthing handles device-to-device synchronization in the background
+
+### Secure access away from home
+
+- Use Tailscale to open MyCloud privately from another network, such as school, travel, or a different Wi-Fi connection
+- Access MyCloud through a private HTTPS address on your Tailscale network
+- Avoid router port forwarding
+- Avoid exposing port `5000` directly to the public internet
+- Limit access to devices and accounts authorized in your Tailscale network
 
 ## How It Works
 
 ```text
-Browser
-  |
-  v
-MyCloud web app in Docker
-  |
-  v
-Mounted Syncthing folder on the host computer
-  |
-  v
-Syncthing
-  |
-  +-- Phone
-  +-- Laptop
-  +-- Raspberry Pi
-  +-- Other trusted devices
+                    Browser on a trusted device
+                              |
+                              v
+                 MyCloud dashboard on port 5000
+                              |
+                              v
+                    Docker container running MyCloud
+                              |
+                              v
+         Mounted folder on the host computer or Raspberry Pi
+                              |
+                              v
+                         Syncthing folder
+                              |
+              +---------------+---------------+
+              |               |               |
+              v               v               v
+           Phone           Laptop        Raspberry Pi
 ```
+
+### What each part does
+
+- **MyCloud** provides the browser dashboard, uploads, downloads, and file-conversion tools
+- **Docker** packages MyCloud so it can be started with one Compose command
+- **The mounted folder** lets MyCloud work directly with a folder on the host computer
+- **Syncthing** detects file changes in that folder and synchronizes them to devices that are paired and authorized to share it
+- **Tailscale** is optional and provides private remote access to the dashboard from approved devices
+
+## Screenshots
+
+### Login
+
+<img
+  src="./images/login-page.png"
+  alt="MyCloud login page"
+  width="850"
+/>
+
+MyCloud requires the configured application password before users can access files, uploads, downloads, and conversion tools.
+
+### File Dashboard
+
+<img
+  src="./images/file-dashboard.png"
+  alt="MyCloud file dashboard showing files from a Syncthing folder"
+  width="850"
+/>
+
+The dashboard displays files from the connected Syncthing folder and provides a central browser-based workspace for managing them.
+
+### File Converter
+
+<img
+  src="./images/converter.png"
+  alt="MyCloud converter page for choosing a file and output format"
+  width="850"
+/>
+
+The converter page lets users select a synced file and choose one of the supported output formats. Converted files are saved back into the synced folder.
 
 ## Requirements
 
 Install these on the device that will host MyCloud:
 
-- Docker Desktop
+- Docker Desktop on Windows, or Docker Engine with Docker Compose on Linux/Raspberry Pi
 - Syncthing
 - Git
 - Optional: Tailscale for secure access away from home
+
+> The Docker setup steps below are written and tested for Windows with Docker Desktop.
 
 ## Setup
 
 ### 1. Clone the repository
 
-Open PowerShell and run:
-
 ```powershell
-git clone https://github.com/vaishantn/iCloud_alternative.git
-cd YOUR-REPOSITORY-NAME
+git clone [https://github.com/vaishantn/iCloud_alternative.git](https://github.com/vaishantn/iCloud_alternative.git)
+cd iCloud_alternative
 ```
 
 ### 2. Set up Syncthing
 
 1. Install and open Syncthing.
 2. Create or choose the Syncthing folder that MyCloud should manage.
-3. Open the Syncthing web interface:
+3. Open the Syncthing interface in your browser:
 
 ```text
 http://127.0.0.1:8384
 ```
 
-4. In Syncthing, open:
+4. In Syncthing, go to:
 
 ```text
 Actions -> Settings -> GUI
@@ -99,7 +173,7 @@ Open the new configuration file:
 notepad .env
 ```
 
-Set the values for your computer:
+Fill in your own values:
 
 ```env
 FLASK_SECRET_KEY=replace-with-a-long-random-secret
@@ -108,17 +182,14 @@ SYNCTHING_API_KEY=replace-with-your-syncthing-api-key
 
 SYNCTHING_URL=http://host.docker.internal:8384
 
-# Path inside the Docker container.
+# Leave this unchanged.
 SYNCED_FOLDER_PATH=/data/syncthing
 
-# Path to your Syncthing folder on Windows.
-# Use forward slashes here.
+# Change this to your own Syncthing folder.
+# Use forward slashes on Windows.
 HOST_SYNCED_FOLDER_PATH=C:/Users/YourWindowsUser/Syncthing_save_folder
 
-# Optional: change this if port 5000 is already in use.
 APP_PORT=5000
-
-# Leave false unless you intentionally want demo mode.
 DEMO_MODE=false
 ```
 
@@ -134,7 +205,7 @@ Copy the generated value into:
 FLASK_SECRET_KEY=your-generated-value
 ```
 
-Do not commit `.env`. It contains your password, secret key, API key, and local folder path.
+Do not commit `.env`. It contains private configuration values, including your password, secret key, API key, and local folder path.
 
 ### 4. Start MyCloud
 
@@ -156,10 +227,10 @@ Log in with the password you set for `APP_PASSWORD`.
 
 ### 5. Test MyCloud
 
-1. Confirm the dashboard can see files in your Syncthing folder.
+1. Confirm the dashboard shows files in your Syncthing folder.
 2. Upload a small test file.
-3. Confirm the file appears in your Windows Syncthing folder.
-4. Confirm Syncthing syncs it to another connected device.
+3. Confirm it appears in your Windows Syncthing folder.
+4. Confirm it syncs to other devices connected through Syncthing.
 
 ## Daily Commands
 
@@ -193,30 +264,26 @@ docker compose ps
 docker compose logs --tail=100
 ```
 
-## Access MyCloud Away From Home
+## Access Away From Home
 
-MyCloud normally runs only on the computer hosting Docker:
+MyCloud can be used locally on the computer running Docker:
 
 ```text
 http://localhost:5000
 ```
 
-To use MyCloud from a phone, another laptop, school, or another network, use Tailscale.
+For secure access from another network, use Tailscale.
 
-Tailscale creates a private encrypted network between devices you authorize. You do not need to open router ports or expose MyCloud publicly to the internet.
+Tailscale creates a private encrypted network between devices you approve. With Tailscale Serve, MyCloud can be reached through a private HTTPS address by devices in your Tailscale network, without opening a router port or making the dashboard publicly available.
 
 ### 1. Install Tailscale
 
 Install Tailscale on:
 
-- The Windows computer running Docker and MyCloud
+- The computer running Docker and MyCloud
 - Every phone, tablet, laptop, or other device that should access MyCloud
 
-Download Tailscale:
-
-```text
-[https://tailscale.com/download](https://tailscale.com/download)
-```
+Download Tailscale from [tailscale.com/download](https://tailscale.com/download).
 
 On Windows:
 
@@ -232,13 +299,13 @@ On your phone or another computer:
 
 ### 2. Connect the host computer
 
-On the Windows computer running MyCloud, open PowerShell:
+On the computer running MyCloud, open PowerShell and run:
 
 ```powershell
 tailscale up
 ```
 
-Complete the sign-in flow, then check the connection:
+Complete the sign-in flow in your browser, then check:
 
 ```powershell
 tailscale status
@@ -246,7 +313,7 @@ tailscale status
 
 ### 3. Share MyCloud over Tailscale
 
-Make sure MyCloud is running:
+Make sure MyCloud is running first:
 
 ```powershell
 docker compose up -d
@@ -258,19 +325,19 @@ Then run:
 tailscale serve localhost:5000
 ```
 
-Check the configured HTTPS address:
+Check the Tailscale Serve configuration:
 
 ```powershell
 tailscale serve status
 ```
 
-Tailscale will provide an HTTPS URL similar to:
+Tailscale will provide an HTTPS address similar to:
 
 ```text
 [https://your-computer-name.your-tailnet.ts.net](https://your-computer-name.your-tailnet.ts.net)
 ```
 
-Open that URL from another device that is signed in to your Tailscale network.
+Open that address from another device that is signed in to your Tailscale network.
 
 ### Stop Tailscale access
 
@@ -293,21 +360,21 @@ tailscale serve status
 
 Check that:
 
-* MyCloud is running:
+- MyCloud is still running:
 
 ```powershell
 docker compose ps
 ```
 
-* Tailscale is connected on the computer hosting MyCloud:
+- Tailscale is connected on the computer hosting MyCloud:
 
 ```powershell
 tailscale status
 ```
 
-* Tailscale is installed and connected on the remote device.
-* The remote device is authorized on the same Tailscale network.
-* `tailscale serve status` points to `localhost:5000`.
+- Tailscale is installed and connected on the remote device.
+- The remote device is signed in to the same authorized Tailscale account.
+- `tailscale serve status` points to `localhost:5000`.
 
 ## Supported Conversions
 
@@ -315,25 +382,28 @@ tailscale status
 |---|---|---|
 | PDF | DOCX | Supported |
 | JPG, JPEG, PNG, WebP | JPG, PNG, WebP | Supported |
-| MP3, WAV, MP4, MKV, MOV, AVI, M4A | MP3, WAV, MP4, MKV | Supported when FFmpeg supports the input |
+| MP3, WAV, MP4, MKV, MOV, AVI, M4A | MP3, WAV, MP4, MKV | Supported when the source format is supported |
 | DOCX | PDF | Not supported in Docker |
 
 ## Limitations
 
 - DOCX-to-PDF conversion requires Microsoft Word and Windows-specific automation, so it is not available inside the Linux Docker container.
 - Syncthing must be installed and configured separately.
-- MyCloud must be running for the website to be available.
+- MyCloud must be running for the dashboard to be available.
 - MyCloud is designed for personal or trusted-device use, not public internet hosting.
-- This setup is documented for Windows with Docker Desktop.
+- The Docker setup instructions are written and tested for Windows with Docker Desktop. Linux and Raspberry Pi hosts may need platform-specific Docker and file-path adjustments.
 
-## Security
+## Security and Privacy
 
-- Do not commit `.env`.
-- Use a strong `APP_PASSWORD`.
-- Keep your Syncthing API key private.
-- Do not forward port `5000` on your router.
-- Use Tailscale for secure remote access instead of exposing the app publicly.
-- Install Tailscale only on devices you trust.
+- MyCloud works with a local folder you choose instead of creating a separate MyCloud storage account.
+- The dashboard requires an `APP_PASSWORD` before files can be viewed, uploaded, downloaded, or converted.
+- Syncthing synchronization happens only with devices that you explicitly pair and authorize.
+- Do not forward port `5000` through your router.
+- Use Tailscale Serve for private remote access from trusted devices.
+- Tailscale Serve is private to your Tailscale network; do not use Tailscale Funnel if you do not want public internet access.
+- Keep your Syncthing API key, MyCloud password, Flask secret key, and private configuration values out of GitHub.
+- Install Tailscale only on devices and accounts you trust.
+- Choose a strong, unique MyCloud password.
 
 ## Project Files
 
@@ -342,13 +412,17 @@ app.py                     Flask application
 converter.py               File conversion functions
 get_name.py                Syncthing helper functions
 templates/                 HTML pages
+images/                    README screenshots
 Dockerfile                 Docker image instructions
 compose.yaml               Docker Compose configuration
 requirements-docker.txt    Docker Python dependencies
 .env_example               Safe example configuration
 .env                       Private configuration; do not commit
+LICENSE                    MIT License
 ```
 
-License
+## License
 
-Add a license for your project, such as the MIT License.
+This project is licensed under the [MIT License](LICENSE).
+
+You may use, copy, modify, distribute, and build upon this project as long as the original copyright notice and license notice are included. The software is provided without warranty.
