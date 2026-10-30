@@ -406,11 +406,11 @@ def delete(filename):
     if not path_is_inside_sync_folder(file_path):
         abort(400, description=" Invalid file path")
 
-        if not requested_file.is_file():
+        if not file_path_file.is_file():
             abort(404, description="File not found")
 
         try:
-            requested_file.unlink()
+            file_path.unlink()
             flash("Deleted")
         except:
             app.logger.exception("could not delete")
