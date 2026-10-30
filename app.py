@@ -128,11 +128,10 @@ def home():
         return redirect(url_for("login"))
 
     search_query = request.args.get("q", "", type=str)
-    print("Search query:", repr(search_query))
-    print("Search query type:", type(search_query))
+
 
     try:
-        items = file_search.search(search_query)
+        items = file_search.list_files()
 
     except (requests.RequestException, RuntimeError, ValueError) as exc:
         app.logger.warning("Could not load Syncthing files: %s", exc)

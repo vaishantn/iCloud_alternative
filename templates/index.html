@@ -53,12 +53,18 @@
     </style>
 </head>
 
+
 <body>
     <h2>MyCloud Files</h2>
 
     <p>
         Files stored in your Syncthing shared folder.
     </p>
+    <div>
+        <label for="filesearch">Search files</label>
+        <input type="search" id="fileSearch" placeholder="search">
+    </div>
+    <!--
     <form action="{{ url_for('home') }}" method="GET">
         <label for="file-search">Search your files</label>
         <input id="file-search" type="search" name="q" value="{{ search_querry }}"
@@ -67,7 +73,9 @@
             <a href="{{ url_for('home') }}">Clear search</a>
     
         {% endif %}
+        
     </form>
+    -->
 
     <table>
         <thead>
@@ -81,9 +89,9 @@
             </tr>
         </thead>
 
-        <tbody>
+        <tbody id="Table">
             {% for file in files %}
-            <tr>
+            <tr data-search="{{ (file.file_name ~ '' ~ file.relative_path)|lower}}">
                 <td>
                     <strong>{{ file.folder_name }}</strong>
                 </td>
@@ -124,6 +132,9 @@
             {% endfor %}
         </tbody>
     </table>
+    <p id="noResults" hidden>
+        no matching files found
+    </p>
 
     {% if not files %}
         <p>No files or folders were found yet.</p>
@@ -152,5 +163,28 @@
             <button type="submit">Convert</button>
         </form>
     </div>
+    <script>
+    const searchInput = document.getElementById("fileSearch")
+    const fileRows = document.querySelectorAll('#Table tr')
+    const noResult = document.getElementById("noResults")
+
+    searchInput.addEventListener("input", function (){
+        const query = this.value.trim().toLowerCase();
+
+        let visibleCount = 0;
+
+        fileRows.forEach(row => {
+            const text = row.dataset.search || ""
+            const matches = text.includes(query)
+
+            row.hidden =!matches
+
+            if (matches){
+                visibleCount++
+            }
+        })
+        noResult.hidden = query === "" || visibleCount > 0 || fileRows.length === 0
+    })
+</script>
 </body>
 </html>
