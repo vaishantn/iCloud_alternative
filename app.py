@@ -21,6 +21,7 @@ from werkzeug.utils import secure_filename
 
 from converter import Converter
 from get_name import Get_Name
+from file_search import FileSearch
 
 
 load_dotenv()
@@ -43,12 +44,13 @@ if DEMO_MODE:
 else:
     SYNCED_FOLDER_PATH = Path(
         os.getenv(
-            "SYNCED_FOLDER_PATH",
+            "HOST_SYNCED_FOLDER_PATH",
             str(Path.home() / "Syncthing_savefolder"),
         )
     ).expanduser().resolve()
 
 SYNCED_FOLDER_PATH.mkdir(parents=True, exist_ok=True)
+file_search = FileSearch(SYNCED_FOLDER_PATH)
 
 # In normal mode, these must come from the user's private .env file.
 # Placeholder values let the app start but Syncthing actions will fail
@@ -64,26 +66,7 @@ def require_login():
 
 
 def get_local_files():
-    files = []
-
-    for path in sorted(SYNCED_FOLDER_PATH.rglob("*")):
-        if path.is_file():
-            relative_path = path.relative_to(SYNCED_FOLDER_PATH).as_posix()
-
-            files.append(
-                {
-                    "folder_name": "Syncthing Files",
-                    "file_name": path.name,
-                    "relative_path": relative_path,
-                    "type": "file",
-                    "size": path.stat().st_size,
-                    "time": datetime.fromtimestamp(
-                        path.stat().st_mtime
-                    ).strftime("%Y-%m-%d %H:%M"),
-                }
-            )
-
-    return files
+    return file_search.list_files()
 
 
 def get_syncthing_files():
@@ -144,8 +127,12 @@ def home():
     if not require_login():
         return redirect(url_for("login"))
 
+    search_query = request.args.get("q", "", type=str)
+    print("Search query:", repr(search_query))
+    print("Search query type:", type(search_query))
+
     try:
-        items = get_local_files()
+        items = file_search.search(search_query)
 
     except (requests.RequestException, RuntimeError, ValueError) as exc:
         app.logger.warning("Could not load Syncthing files: %s", exc)
@@ -153,12 +140,16 @@ def home():
             f"Could not connect to Syncthing: {exc}",
             "error",
         )
+    except (OSError, ValueError) as exc:
+        app.logger.warning("Could not search files: %s", exc)
+        flash(f"Could not search files.","error",)
         items = []
 
     return render_template(
         "index.html",
         files=items,
         demo_mode=DEMO_MODE,
+        search_query=search_query
     )
 
 

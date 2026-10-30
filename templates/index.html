@@ -59,6 +59,15 @@
     <p>
         Files stored in your Syncthing shared folder.
     </p>
+    <form action="{{ url_for('home') }}" method="GET">
+        <label for="file-search">Search your files</label>
+        <input id="file-search" type="search" name="q" value="{{ search_querry }}"
+        <button type="submit">Search</button>
+        {% if search_querry %}
+            <a href="{{ url_for('home') }}">Clear search</a>
+    
+        {% endif %}
+    </form>
 
     <table>
         <thead>
