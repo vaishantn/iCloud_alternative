@@ -13,10 +13,7 @@ class Converter:
 
         # Docker supplies /data/syncthing.
         # Native Windows use can set this environment variable to a local folder.
-        self.output_dir = os.environ.get(
-            "SYNCED_FOLDER_PATH",
-            r"C:\Users\vaish\Syncthing_save_folder",
-        )
+        self.output_dir = os.environ.get("HOST_SYNCED_FOLDER_PATH")
 
         os.makedirs(self.output_dir, exist_ok=True)
 
