@@ -396,6 +396,24 @@ def download_file(filename):
         download_name=requested_file.name,
     )
 
+@app.route("/delete/<path:filename>", methods=["POST"])
+def delete(filename):
+    if not require_login():
+        return redirect(url_for("login"))
 
+    file_path = (SYNCED_FOLDER_PATH / filename).resolve()
+
+    if not path_is_inside_sync_folder(file_path):
+        abort(400, description=" Invalid file path")
+
+        if not requested_file.is_file():
+            abort(404, description="File not found")
+
+        try:
+            requested_file.unlink()
+            flash("Deleted")
+        except:
+            app.logger.exception("could not delete")
+    return redirect("/")
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
