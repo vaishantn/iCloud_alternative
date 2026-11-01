@@ -405,22 +405,6 @@ tailscale status
 - Install Tailscale only on devices and accounts you trust.
 - Choose a strong, unique MyCloud password.
 
-## Project Files
-
-```text
-app.py                     Flask application
-converter.py               File conversion functions
-get_name.py                Syncthing helper functions
-templates/                 HTML pages
-images/                    README screenshots
-Dockerfile                 Docker image instructions
-compose.yaml               Docker Compose configuration
-requirements-docker.txt    Docker Python dependencies
-.env_example               Safe example configuration
-.env                       Private configuration; do not commit
-LICENSE                    MIT License
-```
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
