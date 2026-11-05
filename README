@@ -12,6 +12,14 @@ This project is an alternative to iCloud
 - You can search for files
 - Secure connection 
 - Website works on any device
-   
+
+# Preview
+
+![Login Page](images/login-page.png)
+
+![Home Page](images/file-dashboard.png)
+
+![File Converter Page](images/converter.png)
+
 
 # Made with Python, Syncthing, HTML and JAVA SCRIPT
